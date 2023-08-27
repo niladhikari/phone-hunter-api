@@ -1,6 +1,6 @@
-const loadPhone = async () => {
+const loadPhone = async (searchText) => {
   const res = await fetch(
-    "https://openapi.programming-hero.com/api/phones?search=iphone"
+    `https://openapi.programming-hero.com/api/phones?search=${searchText}`
   );
   const data = await res.json();
   const phones = data.data;
@@ -10,10 +10,29 @@ const loadPhone = async () => {
 
 const displayPhone = (phones) => {
   const phoneContainer = document.getElementById("phone-container");
+
+  // clear phone container cards before adding new cards
+  phoneContainer.textContent = "";
+
+  // display show all button if there are more than 12 phones
+      const showAllContainer = document.getElementById('show-all-container');
+
+      if (phones.length > 12) {
+        showAllContainer.classList.remove('hidden')
+      }
+      else{
+        showAllContainer.classList.add('hidden')
+      }
+
+     phones = phones.slice(0, 12);
+
   phones.forEach((phone) => {
-    console.log(phone);
-    const phoneCard = document.createElement('div');
+    // console.log(phone);
+    // 2 create a div
+    const phoneCard = document.createElement("div");
     phoneCard.classList = `card  bg-base-100 shadow-xl`;
+
+    // 3: set inner html
     phoneCard.innerHTML = `
         <figure class="px-10 pt-10">
                         <img src="${phone.image}" alt="Shoes" class="rounded-xl" />
@@ -26,15 +45,28 @@ const displayPhone = (phones) => {
                         </div>
                     </div>
         `;
-    phoneContainer.appendChild(phoneCard)
+    // 4 append child
+    phoneContainer.appendChild(phoneCard);
   });
+  toggleLoadingSpinner(false)
 };
 
-const handleSearch = () =>{
-    const inputField = document.getElementById('search-field');
-    const inputText = inputField.value;
-    console.log(inputText);
+const handleSearch = () => {
+    toggleLoadingSpinner(true)
+  const inputField = document.getElementById("search-field");
+  const inputText = inputField.value;
+//   console.log(inputText);
+  loadPhone(inputText);
+};
+
+// loadPhone();
+
+const toggleLoadingSpinner = (isLoading) => {
+    const loadingSpinner = document.getElementById('loading-spinner');
+    if (isLoading) {
+        loadingSpinner.classList.remove('hidden')
+    }
+    else {
+        loadingSpinner.classList.add('hidden');
+    }
 }
-
-
-loadPhone();
